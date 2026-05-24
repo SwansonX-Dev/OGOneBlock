@@ -42,7 +42,7 @@ public final class OGIsland {
     }
 
     public void fillQueue(int target) {
-        while (upcoming.size() < target) upcoming.addLast(plugin.blocks().roll());
+        while (upcoming.size() < target) upcoming.addLast(plugin.blocks().roll(data.blocksBroken()));
     }
 
     public Material nextBlock() {

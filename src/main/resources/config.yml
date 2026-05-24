@@ -24,6 +24,7 @@ gameplay:
 
 blocks:
   starter-queue: 12
+  # Legacy fallback if phases are removed or misconfigured.
   rolls:
     - "DIRT:18"
     - "GRASS_BLOCK:10"
@@ -38,6 +39,329 @@ blocks:
     - "IRON_ORE:2"
     - "WATER:1"
     - "LAVA:1"
+
+phases:
+  - id: plains
+    display: "Plains Start"
+    start-blocks: 0
+    passive-chance: 0.025
+    hostile-chance: 0.008
+    passive-spawns:
+      - CHICKEN
+      - COW
+      - SHEEP
+      - PIG
+    hostile-spawns:
+      - ZOMBIE
+      - SKELETON
+    loot:
+      - "WHEAT_SEEDS:2:6:8"
+      - "BEETROOT_SEEDS:1:3:4"
+      - "POTATO:1:3:4"
+      - "CARROT:1:3:4"
+      - "BONE_MEAL:2:8:6"
+      - "WATER_BUCKET:1:1:2"
+      - "OAK_SAPLING:1:2:5"
+      - "BREAD:1:3:4"
+    blocks:
+      - "DIRT:22"
+      - "GRASS_BLOCK:14"
+      - "STONE:16"
+      - "CHEST:2"
+      - "OAK_LOG:9"
+      - "BIRCH_LOG:5"
+      - "COBBLESTONE:8"
+      - "GRAVEL:4"
+      - "SAND:4"
+      - "CLAY:2"
+      - "COAL_ORE:3"
+      - "IRON_ORE:1"
+      - "WATER:1"
+  - id: cave
+    display: "Cave"
+    start-blocks: 300
+    passive-chance: 0.015
+    hostile-chance: 0.022
+    passive-spawns:
+      - BAT
+    hostile-spawns:
+      - ZOMBIE
+      - SKELETON
+      - SPIDER
+      - CREEPER
+    loot:
+      - "TORCH:8:24:8"
+      - "COAL:4:12:8"
+      - "RAW_IRON:2:6:5"
+      - "RAW_COPPER:3:9:4"
+      - "WATER_BUCKET:1:1:2"
+      - "LAVA_BUCKET:1:1:1"
+      - "BREAD:1:4:4"
+      - "STRING:2:6:3"
+    blocks:
+      - "STONE:25"
+      - "COBBLESTONE:12"
+      - "CHEST:2"
+      - "ANDESITE:6"
+      - "DIORITE:5"
+      - "GRANITE:5"
+      - "COAL_ORE:6"
+      - "IRON_ORE:4"
+      - "COPPER_ORE:3"
+      - "GRAVEL:5"
+      - "WATER:1"
+      - "LAVA:1"
+  - id: farm
+    display: "Homestead"
+    start-blocks: 700
+    passive-chance: 0.04
+    hostile-chance: 0.015
+    passive-spawns:
+      - CHICKEN
+      - COW
+      - SHEEP
+      - PIG
+      - RABBIT
+    hostile-spawns:
+      - ZOMBIE
+      - SPIDER
+    loot:
+      - "WHEAT_SEEDS:4:10:8"
+      - "BEETROOT_SEEDS:2:6:5"
+      - "POTATO:2:6:6"
+      - "CARROT:2:6:6"
+      - "PUMPKIN_SEEDS:1:3:4"
+      - "MELON_SEEDS:1:3:4"
+      - "SUGAR_CANE:2:6:5"
+      - "CACTUS:1:4:3"
+      - "BAMBOO:2:8:3"
+      - "WATER_BUCKET:1:1:3"
+      - "BONE_MEAL:4:12:7"
+      - "LEATHER:1:4:3"
+    blocks:
+      - "DIRT:16"
+      - "GRASS_BLOCK:12"
+      - "FARMLAND:4"
+      - "CHEST:3"
+      - "HAY_BLOCK:3"
+      - "PUMPKIN:3"
+      - "MELON:3"
+      - "OAK_LOG:8"
+      - "BIRCH_LOG:6"
+      - "STONE:10"
+      - "IRON_ORE:3"
+      - "WATER:2"
+      - "LAVA:1"
+  - id: forest
+    display: "Old Forest"
+    start-blocks: 1200
+    passive-chance: 0.035
+    hostile-chance: 0.02
+    passive-spawns:
+      - WOLF
+      - FOX
+      - BEE
+      - SHEEP
+    hostile-spawns:
+      - ZOMBIE
+      - SKELETON
+      - SPIDER
+      - CREEPER
+    loot:
+      - "OAK_SAPLING:2:5:6"
+      - "SPRUCE_SAPLING:2:5:5"
+      - "BIRCH_SAPLING:2:5:5"
+      - "DARK_OAK_SAPLING:2:4:3"
+      - "APPLE:2:6:5"
+      - "BONE_MEAL:4:12:6"
+      - "HONEYCOMB:1:4:2"
+      - "WATER_BUCKET:1:1:2"
+      - "IRON_INGOT:1:4:3"
+    blocks:
+      - "GRASS_BLOCK:12"
+      - "DIRT:10"
+      - "PODZOL:7"
+      - "MOSS_BLOCK:6"
+      - "OAK_LOG:10"
+      - "SPRUCE_LOG:9"
+      - "BIRCH_LOG:7"
+      - "DARK_OAK_LOG:5"
+      - "OAK_LEAVES:5"
+      - "CHEST:2"
+      - "STONE:8"
+      - "COAL_ORE:4"
+      - "IRON_ORE:3"
+  - id: deep_cave
+    display: "Deep Cave"
+    start-blocks: 1900
+    passive-chance: 0.008
+    hostile-chance: 0.035
+    passive-spawns:
+      - BAT
+    hostile-spawns:
+      - ZOMBIE
+      - SKELETON
+      - CREEPER
+      - CAVE_SPIDER
+      - ENDERMAN
+    loot:
+      - "TORCH:12:32:8"
+      - "RAW_IRON:4:10:8"
+      - "RAW_GOLD:2:7:5"
+      - "LAPIS_LAZULI:4:12:4"
+      - "REDSTONE:6:18:4"
+      - "DIAMOND:1:2:2"
+      - "WATER_BUCKET:1:1:2"
+      - "LAVA_BUCKET:1:1:2"
+      - "BREAD:2:5:3"
+    blocks:
+      - "DEEPSLATE:22"
+      - "COBBLED_DEEPSLATE:12"
+      - "CHEST:2"
+      - "TUFF:8"
+      - "COAL_ORE:5"
+      - "IRON_ORE:5"
+      - "COPPER_ORE:3"
+      - "GOLD_ORE:3"
+      - "REDSTONE_ORE:3"
+      - "LAPIS_ORE:2"
+      - "DIAMOND_ORE:1"
+      - "LAVA:2"
+      - "WATER:1"
+  - id: desert
+    display: "Desert Ruins"
+    start-blocks: 2800
+    passive-chance: 0.025
+    hostile-chance: 0.035
+    passive-spawns:
+      - RABBIT
+      - CAMEL
+    hostile-spawns:
+      - HUSK
+      - SKELETON
+      - SPIDER
+      - CREEPER
+    loot:
+      - "SAND:16:32:7"
+      - "CACTUS:2:6:5"
+      - "SUGAR_CANE:2:6:4"
+      - "DEAD_BUSH:1:4:3"
+      - "WATER_BUCKET:1:1:3"
+      - "GOLD_INGOT:1:5:4"
+      - "IRON_INGOT:2:6:5"
+      - "BONE:3:12:5"
+      - "BREAD:2:6:4"
+    blocks:
+      - "SAND:18"
+      - "SANDSTONE:14"
+      - "SMOOTH_SANDSTONE:7"
+      - "RED_SAND:6"
+      - "TERRACOTTA:5"
+      - "CACTUS:4"
+      - "DEAD_BUSH:3"
+      - "GOLD_ORE:3"
+      - "IRON_ORE:3"
+      - "CHEST:3"
+      - "WATER:1"
+      - "LAVA:1"
+  - id: ocean
+    display: "Ocean Drift"
+    start-blocks: 3900
+    passive-chance: 0.035
+    hostile-chance: 0.028
+    passive-spawns:
+      - TURTLE
+      - COD
+      - SALMON
+    hostile-spawns:
+      - DROWNED
+      - GUARDIAN
+    loot:
+      - "WATER_BUCKET:1:1:7"
+      - "KELP:6:18:7"
+      - "SEAGRASS:4:12:5"
+      - "SUGAR_CANE:3:8:5"
+      - "CLAY_BALL:8:24:6"
+      - "PRISMARINE_SHARD:2:7:3"
+      - "PRISMARINE_CRYSTALS:1:4:2"
+      - "COD:2:8:4"
+      - "SALMON:2:8:4"
+      - "IRON_INGOT:2:5:3"
+    blocks:
+      - "SAND:10"
+      - "GRAVEL:10"
+      - "CLAY:8"
+      - "PRISMARINE:5"
+      - "DARK_PRISMARINE:3"
+      - "SEA_LANTERN:2"
+      - "KELP:4"
+      - "STONE:8"
+      - "IRON_ORE:4"
+      - "LAPIS_ORE:3"
+      - "CHEST:3"
+      - "WATER:4"
+  - id: nether
+    display: "Nether"
+    start-blocks: 5200
+    passive-chance: 0.012
+    hostile-chance: 0.045
+    passive-spawns:
+      - PIGLIN
+    hostile-spawns:
+      - ZOMBIFIED_PIGLIN
+      - MAGMA_CUBE
+      - BLAZE
+      - WITHER_SKELETON
+    loot:
+      - "LAVA_BUCKET:1:1:5"
+      - "GOLD_INGOT:2:8:6"
+      - "QUARTZ:4:16:6"
+      - "GLOWSTONE_DUST:6:18:5"
+      - "BLAZE_ROD:1:3:2"
+      - "MAGMA_CREAM:1:5:3"
+      - "NETHER_WART:2:6:4"
+      - "CRIMSON_FUNGUS:1:4:3"
+      - "WARPED_FUNGUS:1:4:3"
+    blocks:
+      - "NETHERRACK:22"
+      - "BLACKSTONE:9"
+      - "BASALT:8"
+      - "CHEST:2"
+      - "SOUL_SAND:5"
+      - "SOUL_SOIL:4"
+      - "NETHER_QUARTZ_ORE:5"
+      - "NETHER_GOLD_ORE:4"
+      - "GLOWSTONE:3"
+      - "CRIMSON_STEM:3"
+      - "WARPED_STEM:3"
+      - "LAVA:3"
+  - id: end
+    display: "End"
+    start-blocks: 7000
+    passive-chance: 0.0
+    hostile-chance: 0.05
+    passive-spawns: []
+    hostile-spawns:
+      - ENDERMAN
+      - SHULKER
+    loot:
+      - "ENDER_PEARL:2:8:7"
+      - "CHORUS_FRUIT:4:12:6"
+      - "OBSIDIAN:4:12:5"
+      - "DIAMOND:1:3:3"
+      - "GOLD_INGOT:3:9:4"
+      - "IRON_INGOT:4:12:5"
+      - "WATER_BUCKET:1:1:1"
+      - "LAVA_BUCKET:1:1:1"
+    blocks:
+      - "END_STONE:22"
+      - "OBSIDIAN:6"
+      - "PURPUR_BLOCK:5"
+      - "CHORUS_PLANT:4"
+      - "CHORUS_FLOWER:2"
+      - "DIAMOND_ORE:2"
+      - "EMERALD_ORE:2"
+      - "CHEST:3"
 
 milestones:
   - blocks: 100

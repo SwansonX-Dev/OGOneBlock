@@ -47,7 +47,7 @@ public final class OGWorldManager {
     }
 
     private void configure(World world) {
-        world.setSpawnFlags(false, false);
+        world.setSpawnFlags(true, true);
         world.setDifficulty(Difficulty.HARD);
         world.setGameRule(GameRule.DO_MOB_SPAWNING, true);
         world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, true);

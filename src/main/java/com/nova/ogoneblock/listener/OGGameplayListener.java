@@ -15,6 +15,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
@@ -71,13 +72,17 @@ public final class OGGameplayListener implements Listener {
                 || block.getBlockY() != center.getBlockY()) {
             return;
         }
+        long before = island.data().blocksBroken();
         island.data().incrementBlocksBroken();
         long count = island.data().blocksBroken();
         plugin.getServer().getScheduler().runTask(plugin, () -> {
             Material next = island.nextBlock();
             center.getBlock().setType(next, false);
+            if (next == Material.CHEST) plugin.phases().fillLootChest(island, center.getBlock());
             island.ensurePlatform();
             plugin.islands().save(island);
+            plugin.phases().maybeAnnouncePhase(player, before, count);
+            plugin.phases().rollSpawn(player, island);
             plugin.milestones().check(player, island);
             if (count % 100 == 0) {
                 Text.send(player, "<gray>OG blocks broken: <yellow>" + count);
@@ -127,28 +132,42 @@ public final class OGGameplayListener implements Listener {
         if (!event.getPlayer().getWorld().getName().equals(plugin.worlds().worldName())) return;
         org.bukkit.World main = plugin.getServer().getWorlds().isEmpty() ? null : plugin.getServer().getWorlds().getFirst();
         if (main != null) event.setRespawnLocation(main.getSpawnLocation());
+        plugin.getServer().getScheduler().runTask(plugin, () -> plugin.inventories().leave(event.getPlayer()));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onTeleport(PlayerTeleportEvent event) {
         if (event.getTo() == null || event.getTo().getWorld() == null) return;
-        if (!event.getTo().getWorld().getName().equals(plugin.worlds().worldName())) return;
-        if (event.getFrom().getWorld() != null
-                && event.getFrom().getWorld().getName().equals(plugin.worlds().worldName())) return;
+        boolean fromOg = event.getFrom().getWorld() != null
+                && event.getFrom().getWorld().getName().equals(plugin.worlds().worldName());
+        boolean toOg = event.getTo().getWorld().getName().equals(plugin.worlds().worldName());
+        if (fromOg && !toOg) {
+            plugin.inventories().leave(event.getPlayer());
+            return;
+        }
+        if (!toOg || fromOg) return;
         Player player = event.getPlayer();
-        if (player.hasPermission("ogoneblock.command.bypass")) return;
-        if (allowedEntries.remove(player.getUniqueId())) return;
-        event.setCancelled(true);
-        Text.send(player, "<red>Use the OG OneBlock NPC at spawn to enter hard mode.");
+        if (!player.hasPermission("ogoneblock.command.bypass") && !allowedEntries.remove(player.getUniqueId())) {
+            event.setCancelled(true);
+            Text.send(player, "<red>Use the OG OneBlock NPC at spawn to enter hard mode.");
+            return;
+        }
+        plugin.inventories().enter(player);
     }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if (!inOgWorld(player)) return;
+        player.getPersistentDataContainer().set(plugin.ogInventoryKey(), org.bukkit.persistence.PersistentDataType.BYTE, (byte) 1);
         org.bukkit.World main = plugin.getServer().getWorlds().isEmpty() ? null : plugin.getServer().getWorlds().getFirst();
         if (main == null) return;
         plugin.getServer().getScheduler().runTask(plugin, () -> player.teleportAsync(main.getSpawnLocation()));
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        plugin.inventories().saveCurrent(event.getPlayer());
     }
 
     private boolean inOgWorld(Player player) {
