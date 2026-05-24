@@ -1,0 +1,58 @@
+world:
+  name: OGOBworld
+  slot-size: 256
+  center-y: 80
+
+npc:
+  name: "<gold><bold>OG OneBlock"
+  subtitle: "<gray>Left-click to enter hard mode"
+  entity-type: VILLAGER
+  location: ""
+
+gameplay:
+  # Commands players may use while in OGOBworld. Command labels are lowercase
+  # and do not include the slash.
+  allowed-commands:
+    - spawn
+    - msg
+    - tell
+    - w
+    - r
+    - help
+    - tag
+    - tags
+
+blocks:
+  starter-queue: 12
+  rolls:
+    - "DIRT:18"
+    - "GRASS_BLOCK:10"
+    - "STONE:20"
+    - "OAK_LOG:8"
+    - "BIRCH_LOG:5"
+    - "COBBLESTONE:8"
+    - "GRAVEL:4"
+    - "SAND:4"
+    - "CLAY:2"
+    - "COAL_ORE:3"
+    - "IRON_ORE:2"
+    - "WATER:1"
+    - "LAVA:1"
+
+milestones:
+  - blocks: 100
+    tag-id: og_rookie
+    display: "OG Rookie"
+    format: "<dark_gray>[<green>OG Rookie</green>]</dark_gray>"
+  - blocks: 500
+    tag-id: og_grinder
+    display: "OG Grinder"
+    format: "<dark_gray>[<yellow>OG Grinder</yellow>]</dark_gray>"
+  - blocks: 1000
+    tag-id: og_survivor
+    display: "OG Survivor"
+    format: "<dark_gray>[<gold>OG Survivor</gold>]</dark_gray>"
+  - blocks: 5000
+    tag-id: og_legend
+    display: "OG Legend"
+    format: "<dark_gray>[<red>OG Legend</red>]</dark_gray>"

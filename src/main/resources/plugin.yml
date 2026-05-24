@@ -1,0 +1,22 @@
+name: OGOneBlock
+version: ${project.version}
+main: com.nova.ogoneblock.OGOneBlockPlugin
+api-version: '1.21'
+authors: [Nova]
+description: Vanilla-style hard OneBlock mode with isolated islands and xTags milestones.
+load: POSTWORLD
+softdepend: [xTags]
+
+commands:
+  ogoneblock:
+    description: OG OneBlock admin command
+    usage: /<command> [npc|reload|info]
+    aliases: [ogob]
+
+permissions:
+  ogoneblock.admin:
+    description: Manage OG OneBlock.
+    default: op
+  ogoneblock.command.bypass:
+    description: Bypass OG world command restrictions.
+    default: op
