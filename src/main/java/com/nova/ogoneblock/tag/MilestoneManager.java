@@ -37,6 +37,17 @@ public final class MilestoneManager {
         milestones.sort(Comparator.comparingLong(Milestone::blocks));
     }
 
+    /** Next milestone the player hasn't claimed yet, or null if all are done. */
+    public Milestone next(OGIsland island) {
+        long broken = island.data().blocksBroken();
+        for (Milestone m : milestones) {
+            if (!island.data().claimedMilestones().contains(m.tagId()) && broken < m.blocks()) {
+                return m;
+            }
+        }
+        return null;
+    }
+
     public void check(Player player, OGIsland island) {
         long broken = island.data().blocksBroken();
         for (Milestone milestone : milestones) {
@@ -50,9 +61,14 @@ public final class MilestoneManager {
     }
 
     private void grantTag(Player player, Milestone milestone) {
+        grantTag(player, milestone.tagId(), milestone.display(), milestone.format());
+    }
+
+    /** Upsert + grant an xTags tag. No-op (with a warning) if xTags isn't installed. */
+    public void grantTag(Player player, String tagId, String display, String format) {
         org.bukkit.plugin.Plugin xTags = plugin.getServer().getPluginManager().getPlugin("xTags");
         if (xTags == null) {
-            plugin.getLogger().warning("xTags is not installed; cannot grant " + milestone.tagId());
+            plugin.getLogger().warning("xTags is not installed; cannot grant " + tagId);
             return;
         }
         try {
@@ -60,10 +76,10 @@ public final class MilestoneManager {
             Object tagManager = tagManagerMethod.invoke(xTags);
             Method upsert = tagManager.getClass().getMethod("upsert", String.class, String.class, String.class, String.class);
             Method grant = tagManager.getClass().getMethod("grant", java.util.UUID.class, String.class);
-            upsert.invoke(tagManager, milestone.tagId(), milestone.display(), milestone.format(), "");
-            grant.invoke(tagManager, player.getUniqueId(), milestone.tagId());
+            upsert.invoke(tagManager, tagId, display, format, "");
+            grant.invoke(tagManager, player.getUniqueId(), tagId);
         } catch (ReflectiveOperationException ex) {
-            plugin.getLogger().warning("Failed to grant xTags milestone " + milestone.tagId() + ": " + ex.getMessage());
+            plugin.getLogger().warning("Failed to grant xTags tag " + tagId + ": " + ex.getMessage());
         }
     }
 

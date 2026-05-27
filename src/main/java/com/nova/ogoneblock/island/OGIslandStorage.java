@@ -38,6 +38,7 @@ public final class OGIslandStorage {
                         y.getInt("slot.x"),
                         y.getInt("slot.z"));
                 data.blocksBroken(y.getLong("blocksBroken", 0L));
+                data.prestigeLevel(y.getInt("prestigeLevel", 0));
                 data.claimedMilestones().addAll(y.getStringList("claimedMilestones"));
                 result.add(data);
             } catch (Exception ex) {
@@ -56,6 +57,7 @@ public final class OGIslandStorage {
         y.set("slot.x", data.slotX());
         y.set("slot.z", data.slotZ());
         y.set("blocksBroken", data.blocksBroken());
+        y.set("prestigeLevel", data.prestigeLevel());
         y.set("claimedMilestones", new ArrayList<>(data.claimedMilestones()));
         try {
             y.save(file);

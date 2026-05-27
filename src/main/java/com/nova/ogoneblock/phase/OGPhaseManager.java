@@ -5,12 +5,15 @@ import com.nova.ogoneblock.island.OGIsland;
 import com.nova.ogoneblock.util.Text;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.block.Chest;
+import org.bukkit.block.TileState;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -21,9 +24,11 @@ public final class OGPhaseManager {
 
     private final OGOneBlockPlugin plugin;
     private final List<OGPhase> phases = new ArrayList<>();
+    private final NamespacedKey lootKey;
 
     public OGPhaseManager(OGOneBlockPlugin plugin) {
         this.plugin = plugin;
+        this.lootKey = new NamespacedKey(plugin, "og_loot_filled");
     }
 
     public void load() {
@@ -65,6 +70,19 @@ public final class OGPhaseManager {
         return index <= 0 ? current : phases.get(index - 1);
     }
 
+    public OGPhase next(long blocksBroken) {
+        OGPhase current = current(blocksBroken);
+        int index = phases.indexOf(current);
+        return index < 0 || index >= phases.size() - 1 ? null : phases.get(index + 1);
+    }
+
+    public List<OGPhase> all() { return List.copyOf(phases); }
+
+    /** Block threshold for prestige: the start of the last configured phase. */
+    public long prestigeThreshold() {
+        return phases.isEmpty() ? Long.MAX_VALUE : phases.getLast().startBlocks();
+    }
+
     public void maybeAnnouncePhase(Player player, long before, long after) {
         OGPhase old = current(before);
         OGPhase now = current(after);
@@ -84,10 +102,16 @@ public final class OGPhaseManager {
     }
 
     public void fillLootChest(OGIsland island, org.bukkit.block.Block block) {
+        if (block.getType() != Material.CHEST) return;
         if (!(block.getState() instanceof Chest chest)) return;
+        if (chest instanceof TileState tile
+                && tile.getPersistentDataContainer().has(lootKey, PersistentDataType.BYTE)) {
+            return;
+        }
         OGPhase phase = current(island.data().blocksBroken());
         if (phase.loot().isEmpty()) return;
         ThreadLocalRandom rng = ThreadLocalRandom.current();
+        var inventory = chest.getSnapshotInventory();
         int rolls = rng.nextInt(3, 7);
         for (int i = 0; i < rolls; i++) {
             OGPhase.LootEntry entry = pickLoot(phase.loot(), rng);
@@ -97,12 +121,16 @@ public final class OGPhaseManager {
             int slot;
             int guard = 0;
             do {
-                slot = rng.nextInt(chest.getBlockInventory().getSize());
+                slot = rng.nextInt(inventory.getSize());
                 guard++;
-            } while (chest.getBlockInventory().getItem(slot) != null && guard < 50);
-            if (chest.getBlockInventory().getItem(slot) == null) chest.getBlockInventory().setItem(slot, stack);
-            else chest.getBlockInventory().addItem(stack);
+            } while (inventory.getItem(slot) != null && guard < 50);
+            if (inventory.getItem(slot) == null) inventory.setItem(slot, stack);
+            else inventory.addItem(stack);
         }
+        if (chest instanceof TileState tile) {
+            tile.getPersistentDataContainer().set(lootKey, PersistentDataType.BYTE, (byte) 1);
+        }
+        chest.update(true, false);
     }
 
     private void spawn(OGIsland island, EntityType type) {

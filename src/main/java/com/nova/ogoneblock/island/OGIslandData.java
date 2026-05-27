@@ -16,6 +16,7 @@ public final class OGIslandData {
     private final int slotX;
     private final int slotZ;
     private long blocksBroken;
+    private int prestigeLevel;
     private final Set<String> claimedMilestones = new HashSet<>();
 
     public OGIslandData(UUID id, UUID owner, String worldName, int slotX, int slotZ) {
@@ -34,7 +35,16 @@ public final class OGIslandData {
     public long blocksBroken() { return blocksBroken; }
     public void blocksBroken(long blocksBroken) { this.blocksBroken = blocksBroken; }
     public void incrementBlocksBroken() { this.blocksBroken++; }
+    public int prestigeLevel() { return prestigeLevel; }
+    public void prestigeLevel(int prestigeLevel) { this.prestigeLevel = Math.max(0, prestigeLevel); }
     public Set<String> claimedMilestones() { return claimedMilestones; }
+
+    /** Increment prestige and reset run-state. Caller persists. */
+    public void prestige() {
+        this.prestigeLevel++;
+        this.blocksBroken = 0L;
+        this.claimedMilestones.clear();
+    }
 
     public Location centerBlock(int slotSize, int centerY) {
         World world = Bukkit.getWorld(worldName);

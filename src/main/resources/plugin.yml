@@ -12,6 +12,10 @@ commands:
     description: OG OneBlock admin command
     usage: /<command> [npc|reload|info]
     aliases: [ogob]
+  ogprestige:
+    description: View or claim your OG OneBlock prestige
+    usage: /<command> [confirm]
+    aliases: [ogp]
 
 permissions:
   ogoneblock.admin:
@@ -20,3 +24,6 @@ permissions:
   ogoneblock.command.bypass:
     description: Bypass OG world command restrictions.
     default: op
+  ogoneblock.prestige:
+    description: Use /ogprestige.
+    default: true

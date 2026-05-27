@@ -21,6 +21,8 @@ gameplay:
     - help
     - tag
     - tags
+    - ogprestige
+    - ogp
 
 blocks:
   starter-queue: 12
@@ -51,6 +53,7 @@ phases:
       - COW
       - SHEEP
       - PIG
+      - VILLAGER
     hostile-spawns:
       - ZOMBIE
       - SKELETON
@@ -122,6 +125,7 @@ phases:
       - SHEEP
       - PIG
       - RABBIT
+      - VILLAGER
     hostile-spawns:
       - ZOMBIE
       - SPIDER

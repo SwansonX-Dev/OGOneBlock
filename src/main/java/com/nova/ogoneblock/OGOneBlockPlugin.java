@@ -1,6 +1,7 @@
 package com.nova.ogoneblock;
 
 import com.nova.ogoneblock.command.OGOneBlockCommand;
+import com.nova.ogoneblock.command.OGPrestigeCommand;
 import com.nova.ogoneblock.island.OGBlockTable;
 import com.nova.ogoneblock.island.OGIslandManager;
 import com.nova.ogoneblock.island.OGIslandStorage;
@@ -10,6 +11,7 @@ import com.nova.ogoneblock.inventory.OGInventoryService;
 import com.nova.ogoneblock.listener.OGGameplayListener;
 import com.nova.ogoneblock.paxel.OGPaxelManager;
 import com.nova.ogoneblock.phase.OGPhaseManager;
+import com.nova.ogoneblock.scoreboard.OGScoreboardManager;
 import com.nova.ogoneblock.tag.MilestoneManager;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -27,6 +29,7 @@ public final class OGOneBlockPlugin extends JavaPlugin {
     private OGInventoryService inventoryService;
     private OGPaxelManager paxelManager;
     private OGPhaseManager phaseManager;
+    private OGScoreboardManager scoreboardManager;
     private NamespacedKey ogInventoryKey;
 
     @Override
@@ -63,6 +66,10 @@ public final class OGOneBlockPlugin extends JavaPlugin {
         OGOneBlockCommand command = new OGOneBlockCommand(this);
         getCommand("ogoneblock").setExecutor(command);
         getCommand("ogoneblock").setTabCompleter(command);
+        getCommand("ogprestige").setExecutor(new OGPrestigeCommand(this));
+
+        scoreboardManager = new OGScoreboardManager(this);
+        scoreboardManager.start();
 
         getLogger().info("OGOneBlock enabled with " + islandManager.count()
                 + " island(s) in " + worldManager.worldName() + ".");
@@ -72,6 +79,7 @@ public final class OGOneBlockPlugin extends JavaPlugin {
     public void onDisable() {
         if (islandManager != null) islandManager.saveAll();
         if (npcManager != null) npcManager.shutdown();
+        if (scoreboardManager != null) scoreboardManager.shutdown();
     }
 
     public void reloadRuntime() {
@@ -96,5 +104,6 @@ public final class OGOneBlockPlugin extends JavaPlugin {
     public OGInventoryService inventories() { return inventoryService; }
     public OGPaxelManager paxels() { return paxelManager; }
     public OGPhaseManager phases() { return phaseManager; }
+    public OGScoreboardManager scoreboard() { return scoreboardManager; }
     public NamespacedKey ogInventoryKey() { return ogInventoryKey; }
 }

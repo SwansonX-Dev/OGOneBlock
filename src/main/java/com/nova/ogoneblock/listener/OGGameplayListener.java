@@ -78,7 +78,14 @@ public final class OGGameplayListener implements Listener {
         plugin.getServer().getScheduler().runTask(plugin, () -> {
             Material next = island.nextBlock();
             center.getBlock().setType(next, false);
-            if (next == Material.CHEST) plugin.phases().fillLootChest(island, center.getBlock());
+            if (next == Material.CHEST) {
+                plugin.phases().fillLootChest(island, center.getBlock());
+                // Follow-up next tick — the chest's tile entity may not be ready on the
+                // same tick as setType, especially on Bedrock/Geyser. fillLootChest is
+                // idempotent (PDC marker), so the second call no-ops if the first worked.
+                plugin.getServer().getScheduler().runTask(plugin,
+                        () -> plugin.phases().fillLootChest(island, center.getBlock()));
+            }
             island.ensurePlatform();
             plugin.islands().save(island);
             plugin.phases().maybeAnnouncePhase(player, before, count);
