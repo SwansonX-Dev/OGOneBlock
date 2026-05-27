@@ -12,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -135,11 +136,24 @@ public final class OGGameplayListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
+    public void onDeath(PlayerDeathEvent event) {
+        if (!inOgWorld(event.getEntity())) return;
+        event.setKeepInventory(true);
+        event.setKeepLevel(true);
+        event.getDrops().clear();
+        event.setDroppedExp(0);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onRespawn(PlayerRespawnEvent event) {
-        if (!event.getPlayer().getWorld().getName().equals(plugin.worlds().worldName())) return;
-        org.bukkit.World main = plugin.getServer().getWorlds().isEmpty() ? null : plugin.getServer().getWorlds().getFirst();
-        if (main != null) event.setRespawnLocation(main.getSpawnLocation());
-        plugin.getServer().getScheduler().runTask(plugin, () -> plugin.inventories().leave(event.getPlayer()));
+        Player player = event.getPlayer();
+        if (!player.getWorld().getName().equals(plugin.worlds().worldName())) return;
+        OGIsland island = plugin.islands().of(player);
+        if (island == null) return;
+        Location spawn = island.data().spawnLocation(plugin.worlds().slotSize(), plugin.worlds().centerY());
+        if (spawn.getWorld() == null) return;
+        spawn.getChunk().load();
+        event.setRespawnLocation(spawn);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
