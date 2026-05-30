@@ -384,6 +384,10 @@ prestige:
   #   %level%  — new prestige level
   reward-commands:
     - "crates give %player% ogob_crate 1"
+    # Tier-specific pet per prestige level — create matching pet IDs in xPets
+    # (ogob_prestige_1, ogob_prestige_2, …). Drop the %level% suffix if you'd
+    # prefer the same pet on every prestige.
+    - "pets give %player% ogob_prestige_%level%"
 
 milestones:
   - blocks: 100
