@@ -26,6 +26,15 @@ gameplay:
     # Two-word entries match "command + first arg", so this allows /ob setspawn
     # without unlocking the rest of /ob.
     - "ob setspawn"
+    # xPets — full pet UX usable inside OG. Admin-only /petadmin is gated by
+    # its own permission and players with ogoneblock.command.bypass anyway.
+    - pet
+    - pets
+    - petability
+    - pettrade
+    - petarena
+    - petrankings
+    - pethelp
 
 blocks:
   starter-queue: 12
