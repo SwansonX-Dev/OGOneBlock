@@ -173,7 +173,10 @@ public final class OGGameplayListener implements Listener {
         }
         if (!toOg || fromOg) return;
         Player player = event.getPlayer();
-        if (!player.hasPermission("ogoneblock.command.bypass") && !allowedEntries.remove(player.getUniqueId())) {
+        boolean returning = plugin.inventories().isInOgMode(player);
+        if (!returning
+                && !player.hasPermission("ogoneblock.command.bypass")
+                && !allowedEntries.remove(player.getUniqueId())) {
             event.setCancelled(true);
             Text.send(player, "<red>Use the OG OneBlock NPC at spawn to enter hard mode.");
             return;
@@ -185,7 +188,10 @@ public final class OGGameplayListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if (!inOgWorld(player)) return;
-        player.getPersistentDataContainer().set(plugin.ogInventoryKey(), org.bukkit.persistence.PersistentDataType.BYTE, (byte) 1);
+        if (plugin.inventories().isInOgMode(player)) {
+            // Legitimate OG resident logging back in — let them stay.
+            return;
+        }
         org.bukkit.World main = plugin.getServer().getWorlds().isEmpty() ? null : plugin.getServer().getWorlds().getFirst();
         if (main == null) return;
         plugin.getServer().getScheduler().runTask(plugin, () -> player.teleportAsync(main.getSpawnLocation()));
