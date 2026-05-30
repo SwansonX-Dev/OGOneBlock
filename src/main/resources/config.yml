@@ -166,6 +166,7 @@ phases:
       - FOX
       - BEE
       - SHEEP
+      - VILLAGER
     hostile-spawns:
       - ZOMBIE
       - SKELETON
@@ -240,6 +241,7 @@ phases:
     passive-spawns:
       - RABBIT
       - CAMEL
+      - VILLAGER
     hostile-spawns:
       - HUSK
       - SKELETON
