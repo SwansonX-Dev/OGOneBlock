@@ -11,6 +11,7 @@ import com.nova.ogoneblock.inventory.OGInventoryService;
 import com.nova.ogoneblock.listener.OGGameplayListener;
 import com.nova.ogoneblock.paxel.OGPaxelManager;
 import com.nova.ogoneblock.phase.OGPhaseManager;
+import com.nova.ogoneblock.prestige.OGPrestigeBonuses;
 import com.nova.ogoneblock.scoreboard.OGScoreboardManager;
 import com.nova.ogoneblock.tag.MilestoneManager;
 import org.bukkit.NamespacedKey;
@@ -29,6 +30,7 @@ public final class OGOneBlockPlugin extends JavaPlugin {
     private OGInventoryService inventoryService;
     private OGPaxelManager paxelManager;
     private OGPhaseManager phaseManager;
+    private OGPrestigeBonuses prestigeBonuses;
     private OGScoreboardManager scoreboardManager;
     private NamespacedKey ogInventoryKey;
 
@@ -58,6 +60,7 @@ public final class OGOneBlockPlugin extends JavaPlugin {
         npcManager.spawnConfigured();
 
         paxelManager = new OGPaxelManager(this);
+        prestigeBonuses = new OGPrestigeBonuses(this);
         inventoryService = new OGInventoryService(this);
 
         gameplayListener = new OGGameplayListener(this);
@@ -104,6 +107,7 @@ public final class OGOneBlockPlugin extends JavaPlugin {
     public OGInventoryService inventories() { return inventoryService; }
     public OGPaxelManager paxels() { return paxelManager; }
     public OGPhaseManager phases() { return phaseManager; }
+    public OGPrestigeBonuses prestigeBonuses() { return prestigeBonuses; }
     public OGScoreboardManager scoreboard() { return scoreboardManager; }
     public NamespacedKey ogInventoryKey() { return ogInventoryKey; }
 }

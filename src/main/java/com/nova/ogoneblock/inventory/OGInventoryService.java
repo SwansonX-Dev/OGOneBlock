@@ -23,15 +23,22 @@ public final class OGInventoryService {
     }
 
     public void enter(Player player) {
-        if (isInOgMode(player)) return;
+        if (isInOgMode(player)) {
+            // Already in OG mode (e.g. logged out in OG and just rejoined) — make sure
+            // prestige bonuses are still applied. Modifier add is idempotent.
+            plugin.prestigeBonuses().apply(player);
+            return;
+        }
         saveSnapshot(player, "normal");
         loadSnapshot(player, "og", true);
         player.getPersistentDataContainer().set(plugin.ogInventoryKey(), org.bukkit.persistence.PersistentDataType.BYTE, (byte) 1);
         plugin.paxels().give(player);
+        plugin.prestigeBonuses().apply(player);
     }
 
     public void leave(Player player) {
         if (!isInOgMode(player)) return;
+        plugin.prestigeBonuses().clear(player);
         saveSnapshot(player, "og");
         loadSnapshot(player, "normal", false);
         player.getPersistentDataContainer().remove(plugin.ogInventoryKey());

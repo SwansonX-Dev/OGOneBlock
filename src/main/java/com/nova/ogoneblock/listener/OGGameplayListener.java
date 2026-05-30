@@ -189,7 +189,10 @@ public final class OGGameplayListener implements Listener {
         Player player = event.getPlayer();
         if (!inOgWorld(player)) return;
         if (plugin.inventories().isInOgMode(player)) {
-            // Legitimate OG resident logging back in — let them stay.
+            // Legitimate OG resident logging back in — let them stay, and re-apply
+            // any per-prestige bonuses since attribute modifiers are stripped on
+            // unload in some Paper builds.
+            plugin.prestigeBonuses().apply(player);
             return;
         }
         org.bukkit.World main = plugin.getServer().getWorlds().isEmpty() ? null : plugin.getServer().getWorlds().getFirst();

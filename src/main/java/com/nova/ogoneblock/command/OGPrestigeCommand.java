@@ -38,6 +38,14 @@ public final class OGPrestigeCommand implements CommandExecutor {
         if (args.length == 0) {
             Text.send(player, "<gold>OG Prestige <gray>— level <yellow>" + level);
             Text.send(player, "<gray>Blocks broken: <white>" + broken + " <dark_gray>/ <white>" + required);
+            int cap = Math.max(0, plugin.getConfig().getInt("prestige.stat-bonus-cap", 10));
+            int effective = Math.min(level, cap);
+            double heartsPerLevel = plugin.getConfig().getDouble("prestige.max-health-per-level", 1.0) / 2.0;
+            if (effective > 0 && heartsPerLevel > 0) {
+                Text.send(player, "<gray>OG max-health bonus: <green>+"
+                        + formatHearts(effective * heartsPerLevel) + " hearts"
+                        + (level > cap ? " <dark_gray>(cap " + cap + ")" : ""));
+            }
             if (broken >= required) {
                 Text.send(player, "<green>Eligible! Run <yellow>/ogprestige confirm<green> to reset progress and gain a level.");
             } else {
@@ -66,11 +74,40 @@ public final class OGPrestigeCommand implements CommandExecutor {
         String format = prestigeTagFormat(newLevel, roman);
         plugin.milestones().grantTag(player, tagId, display, format);
 
+        plugin.prestigeBonuses().apply(player);
+        runRewardCommands(player, newLevel);
+
         Text.send(player, "<gold><bold>PRESTIGE!</bold> <yellow>Level " + newLevel + " <gray>achieved. Progress reset.");
         Text.send(player, "<gray>Tag unlocked: <reset>" + format);
+        int cap = Math.max(0, plugin.getConfig().getInt("prestige.stat-bonus-cap", 10));
+        int effective = Math.min(newLevel, cap);
+        double heartsPerLevel = plugin.getConfig().getDouble("prestige.max-health-per-level", 1.0) / 2.0;
+        if (effective > 0 && heartsPerLevel > 0) {
+            Text.send(player, "<gray>OG max-health bonus: <green>+"
+                    + formatHearts(effective * heartsPerLevel) + " hearts"
+                    + (newLevel > cap ? " <dark_gray>(capped at prestige " + cap + ")" : ""));
+        }
         Bukkit.broadcast(Text.mm("<dark_gray>[<gold>OGOB</gold>]</dark_gray> <yellow>"
                 + player.getName() + "<gold> hit prestige <yellow>" + newLevel + "<gold>!"));
         return true;
+    }
+
+    private void runRewardCommands(Player player, int level) {
+        var commands = plugin.getConfig().getStringList("prestige.reward-commands");
+        for (String raw : commands) {
+            if (raw == null || raw.isBlank()) continue;
+            String resolved = raw
+                    .replace("%player%", player.getName())
+                    .replace("%level%", String.valueOf(level));
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), resolved);
+        }
+    }
+
+    private String formatHearts(double hearts) {
+        if (Math.abs(hearts - Math.rint(hearts)) < 1e-6) {
+            return String.valueOf((int) Math.rint(hearts));
+        }
+        return String.format(java.util.Locale.ROOT, "%.1f", hearts);
     }
 
     private String prestigeTagFormat(int level, String roman) {

@@ -373,6 +373,18 @@ phases:
       - "EMERALD_ORE:2"
       - "CHEST:3"
 
+prestige:
+  # Per-level permanent stat bonuses, active only while inside the OG world.
+  # Bonuses scale linearly until prestige reaches stat-bonus-cap, then plateau.
+  stat-bonus-cap: 10
+  # 1.0 attribute = half a heart, so this is +1/2 heart per prestige level.
+  max-health-per-level: 1.0
+  # Commands run from console on /ogprestige confirm. Placeholders:
+  #   %player% — player name
+  #   %level%  — new prestige level
+  reward-commands:
+    - "crates give %player% ogob_crate 1"
+
 milestones:
   - blocks: 100
     tag-id: og_rookie
