@@ -23,6 +23,9 @@ gameplay:
     - tags
     - ogprestige
     - ogp
+    # Two-word entries match "command + first arg", so this allows /ob setspawn
+    # without unlocking the rest of /ob.
+    - "ob setspawn"
 
 blocks:
   starter-queue: 12

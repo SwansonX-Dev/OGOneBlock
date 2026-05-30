@@ -39,7 +39,7 @@ public final class OGGameplayListener implements Listener {
     public void reload() {
         Set<String> allowed = new HashSet<>();
         for (String command : plugin.getConfig().getStringList("gameplay.allowed-commands")) {
-            String clean = command.toLowerCase(Locale.ROOT).replace("/", "").trim();
+            String clean = command.toLowerCase(Locale.ROOT).replace("/", "").trim().replaceAll("\\s+", " ");
             if (!clean.isBlank()) allowed.add(clean);
         }
         allowedCommands = allowed;
@@ -112,10 +112,15 @@ public final class OGGameplayListener implements Listener {
     public void onCommand(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
         if (!inOgWorld(player) || player.hasPermission("ogoneblock.command.bypass")) return;
-        String raw = event.getMessage().substring(1).split("\\s+", 2)[0].toLowerCase(Locale.ROOT);
-        int colon = raw.indexOf(':');
-        String label = colon >= 0 ? raw.substring(colon + 1) : raw;
+        String[] parts = event.getMessage().substring(1).split("\\s+", 3);
+        String first = parts[0].toLowerCase(Locale.ROOT);
+        int colon = first.indexOf(':');
+        String label = colon >= 0 ? first.substring(colon + 1) : first;
         if (allowedCommands.contains(label)) return;
+        if (parts.length >= 2) {
+            String sub = parts[1].toLowerCase(Locale.ROOT);
+            if (allowedCommands.contains(label + " " + sub)) return;
+        }
         event.setCancelled(true);
         Text.send(player, "<red>That command is disabled on OG OneBlock. Use <yellow>/spawn <red>to leave.");
     }
