@@ -111,6 +111,8 @@ phases:
       - "ANDESITE:6"
       - "DIORITE:5"
       - "GRANITE:5"
+      - "DRIPSTONE_BLOCK:5"
+      - "POINTED_DRIPSTONE:3"
       - "COAL_ORE:6"
       - "IRON_ORE:4"
       - "COPPER_ORE:3"
