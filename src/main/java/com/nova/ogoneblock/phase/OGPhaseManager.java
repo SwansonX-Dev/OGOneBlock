@@ -138,8 +138,19 @@ public final class OGPhaseManager {
         World world = center.getWorld();
         if (world == null) return;
         ThreadLocalRandom rng = ThreadLocalRandom.current();
-        Location spawn = center.clone().add(rng.nextInt(-1, 2) + 0.5, 1.0, rng.nextInt(-1, 2) + 0.5);
+        // Ghasts are 4×4×4 and phantoms also need air to maneuver; spawning at
+        // y+1 made them clip into the platform and often fail to spawn at all.
+        double yOffset = isLargeFlyer(type) ? 8.0 : 1.0;
+        int spread = isLargeFlyer(type) ? 3 : 1;
+        Location spawn = center.clone().add(
+                rng.nextInt(-spread, spread + 1) + 0.5,
+                yOffset,
+                rng.nextInt(-spread, spread + 1) + 0.5);
         world.spawnEntity(spawn, type);
+    }
+
+    private boolean isLargeFlyer(EntityType type) {
+        return type == EntityType.GHAST || type == EntityType.PHANTOM;
     }
 
     private List<OGPhase.BlockEntry> blocks(Object value) {
