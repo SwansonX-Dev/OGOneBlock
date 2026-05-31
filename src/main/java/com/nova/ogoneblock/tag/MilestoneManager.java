@@ -3,7 +3,6 @@ package com.nova.ogoneblock.tag;
 import com.nova.ogoneblock.OGOneBlockPlugin;
 import com.nova.ogoneblock.island.OGIsland;
 import com.nova.ogoneblock.util.Text;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Method;
@@ -39,6 +38,7 @@ public final class MilestoneManager {
 
     /** Next milestone the player hasn't claimed yet, or null if all are done. */
     public Milestone next(OGIsland island) {
+        if (island.data().prestigeLevel() > 0) return null;
         long broken = island.data().blocksBroken();
         for (Milestone m : milestones) {
             if (!island.data().claimedMilestones().contains(m.tagId()) && broken < m.blocks()) {
@@ -49,6 +49,7 @@ public final class MilestoneManager {
     }
 
     public void check(Player player, OGIsland island) {
+        if (island.data().prestigeLevel() > 0) return;
         long broken = island.data().blocksBroken();
         for (Milestone milestone : milestones) {
             String key = milestone.tagId();

@@ -5,6 +5,10 @@ import com.nova.ogoneblock.island.OGIsland;
 import com.nova.ogoneblock.util.Text;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.Container;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -19,8 +23,13 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
@@ -73,12 +82,15 @@ public final class OGGameplayListener implements Listener {
                 || block.getBlockY() != center.getBlockY()) {
             return;
         }
+        List<ItemStack> drops = oneBlockDrops(event.getBlock(), player);
+        event.setDropItems(false);
         long before = island.data().blocksBroken();
         island.data().incrementBlocksBroken();
         long count = island.data().blocksBroken();
         plugin.getServer().getScheduler().runTask(plugin, () -> {
             Material next = island.nextBlock();
             center.getBlock().setType(next, false);
+            deliverOneBlockDrops(player, center, drops);
             if (next == Material.CHEST) {
                 plugin.phases().fillLootChest(island, center.getBlock());
                 // Follow-up next tick — the chest's tile entity may not be ready on the
@@ -211,5 +223,46 @@ public final class OGGameplayListener implements Listener {
 
     private boolean canUseIsland(Player player, OGIsland island) {
         return island != null && island.data().owner().equals(player.getUniqueId());
+    }
+
+    private List<ItemStack> oneBlockDrops(Block block, Player player) {
+        ItemStack tool = player.getInventory().getItemInMainHand();
+        Collection<ItemStack> blockDrops = block.getDrops(tool, player);
+        List<ItemStack> drops = new ArrayList<>(blockDrops.size() + 27);
+        for (ItemStack stack : blockDrops) {
+            if (stack == null || stack.getType().isAir() || stack.getAmount() <= 0) continue;
+            drops.add(stack.clone());
+        }
+        if (block.getState() instanceof Container container) {
+            for (ItemStack stack : container.getSnapshotInventory().getContents()) {
+                if (stack == null || stack.getType().isAir() || stack.getAmount() <= 0) continue;
+                drops.add(stack.clone());
+            }
+        }
+        return drops;
+    }
+
+    private void dropAboveOneBlock(Location center, List<ItemStack> drops) {
+        World world = center.getWorld();
+        if (world == null || drops.isEmpty()) return;
+        Location dropLocation = center.clone().add(0.5, 1.05, 0.5);
+        for (ItemStack stack : drops) {
+            Item item = world.dropItem(dropLocation, stack);
+            item.setVelocity(new Vector(0.0, 0.06, 0.0));
+            item.setPickupDelay(8);
+        }
+    }
+
+    private void deliverOneBlockDrops(Player player, Location center, List<ItemStack> drops) {
+        if (drops.isEmpty()) return;
+        if (!plugin.getConfig().getBoolean("gameplay.oneblock-auto-pickup", true)) {
+            dropAboveOneBlock(center, drops);
+            return;
+        }
+        List<ItemStack> overflow = new ArrayList<>();
+        for (ItemStack stack : drops) {
+            overflow.addAll(player.getInventory().addItem(stack.clone()).values());
+        }
+        dropAboveOneBlock(center, overflow);
     }
 }

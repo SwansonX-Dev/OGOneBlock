@@ -121,7 +121,7 @@ public final class OGScoreboardManager {
         }
 
         Milestone milestone = plugin.milestones().next(island);
-        if (milestone != null) {
+        if (prestige == 0 && milestone != null) {
             long need = Math.max(0L, milestone.blocks() - broken);
             lines.add("<gray>Tag: <aqua>" + milestone.display() + " <dark_gray>(<white>" + need + "<dark_gray>)");
         }
