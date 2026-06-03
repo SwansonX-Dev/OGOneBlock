@@ -16,6 +16,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -90,7 +91,7 @@ public final class OGGameplayListener implements Listener {
         plugin.getServer().getScheduler().runTask(plugin, () -> {
             Material next = island.nextBlock();
             center.getBlock().setType(next, false);
-            deliverOneBlockDrops(player, center, drops);
+            dropAboveOneBlock(center, drops);
             if (next == Material.CHEST) {
                 plugin.phases().fillLootChest(island, center.getBlock());
                 // Follow-up next tick — the chest's tile entity may not be ready on the
@@ -150,6 +151,21 @@ public final class OGGameplayListener implements Listener {
         if (!plugin.npc().isNpc(event.getRightClicked())) return;
         event.setCancelled(true);
         plugin.npc().handle(event.getPlayer());
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onVoidDamage(EntityDamageEvent event) {
+        if (event.getCause() != EntityDamageEvent.DamageCause.VOID) return;
+        if (!(event.getEntity() instanceof Player player)) return;
+        if (!inOgWorld(player)) return;
+        OGIsland island = plugin.islands().of(player);
+        if (island == null) return;
+        Location spawn = island.data().spawnLocation(plugin.worlds().slotSize(), plugin.worlds().centerY());
+        if (spawn.getWorld() == null) return;
+        event.setCancelled(true);
+        spawn.getChunk().load();
+        player.setFallDistance(0f);
+        player.teleportAsync(spawn);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -253,16 +269,4 @@ public final class OGGameplayListener implements Listener {
         }
     }
 
-    private void deliverOneBlockDrops(Player player, Location center, List<ItemStack> drops) {
-        if (drops.isEmpty()) return;
-        if (!plugin.getConfig().getBoolean("gameplay.oneblock-auto-pickup", true)) {
-            dropAboveOneBlock(center, drops);
-            return;
-        }
-        List<ItemStack> overflow = new ArrayList<>();
-        for (ItemStack stack : drops) {
-            overflow.addAll(player.getInventory().addItem(stack.clone()).values());
-        }
-        dropAboveOneBlock(center, overflow);
-    }
 }

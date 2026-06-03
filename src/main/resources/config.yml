@@ -10,9 +10,6 @@ npc:
   location: ""
 
 gameplay:
-  # Send oneblock drops directly into the miner's inventory. If their inventory
-  # is full, leftover items are dropped safely above the oneblock.
-  oneblock-auto-pickup: true
   # Commands players may use while in OGOBworld. Command labels are lowercase
   # and do not include the slash.
   allowed-commands:
