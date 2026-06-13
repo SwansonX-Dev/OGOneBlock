@@ -88,6 +88,8 @@ public final class OGGameplayListener implements Listener {
         long before = island.data().blocksBroken();
         island.data().incrementBlocksBroken();
         long count = island.data().blocksBroken();
+        // Report the OneBlock break to NovaBlock's daily quests (no-op if NovaBlock absent).
+        com.nova.ogoneblock.integration.NovaQuestBridge.record(player, "og_break", 1);
         plugin.getServer().getScheduler().runTask(plugin, () -> {
             Material next = island.nextBlock();
             center.getBlock().setType(next, false);
