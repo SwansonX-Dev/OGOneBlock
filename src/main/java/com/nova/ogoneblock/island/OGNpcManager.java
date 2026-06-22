@@ -44,11 +44,18 @@ public final class OGNpcManager {
     }
 
     public void handle(Player player) {
-        OGIsland island = plugin.islands().getOrCreate(player);
+        // Coop: a teammate who owns no island of their own enters the team's
+        // shared island rather than spawning a separate one. Otherwise the
+        // player gets (or creates) their own.
+        OGIsland island = plugin.islands().homeIsland(player);
+        boolean joiningTeammate = island != null && !island.data().owner().equals(player.getUniqueId());
+        if (island == null) island = plugin.islands().getOrCreate(player);
         island.ensurePlatform();
         plugin.allowOgEntry(player);
         island.teleport(player);
-        Text.send(player, "<green>Sending you to your OG OneBlock island. Use <yellow>/spawn <green>to leave.");
+        Text.send(player, joiningTeammate
+                ? "<green>Joining your team's OG OneBlock island. Use <yellow>/spawn <green>to leave."
+                : "<green>Sending you to your OG OneBlock island. Use <yellow>/spawn <green>to leave.");
     }
 
     public void shutdown() {

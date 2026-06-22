@@ -9,6 +9,15 @@ npc:
   entity-type: VILLAGER
   location: ""
 
+coop:
+  # When true, members of the same xTeams team may build/break on each other's
+  # OG islands, and a teammate who owns no island of their own is sent to the
+  # team's existing island by the spawn NPC (instead of getting a separate one).
+  # Block progress, prestige and milestones stay owned by the island owner.
+  # Requires the xTeams plugin; with it absent this silently falls back to
+  # owner-only access. Set false to disable coop entirely.
+  enabled: true
+
 gameplay:
   # Commands players may use while in OGOBworld. Command labels are lowercase
   # and do not include the slash.

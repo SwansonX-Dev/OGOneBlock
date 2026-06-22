@@ -1,6 +1,7 @@
 package com.nova.ogoneblock.island;
 
 import com.nova.ogoneblock.OGOneBlockPlugin;
+import com.nova.ogoneblock.integration.OGTeamBridge;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -38,6 +39,37 @@ public final class OGIslandManager {
 
     public OGIsland of(Player player) {
         return byOwner.get(player.getUniqueId());
+    }
+
+    /**
+     * The island this player belongs to: the one they own, or — when coop is on
+     * and they own none — a teammate's island shared through xTeams. Used for
+     * teleport, void-respawn and the sidebar so coop members resolve to the
+     * shared island instead of nothing.
+     */
+    public OGIsland homeIsland(Player player) {
+        OGIsland own = byOwner.get(player.getUniqueId());
+        if (own != null) return own;
+        if (!coopEnabled()) return null;
+        for (OGIsland island : byId.values()) {
+            if (OGTeamBridge.areTeammates(player.getUniqueId(), island.data().owner())) return island;
+        }
+        return null;
+    }
+
+    /**
+     * Whether {@code player} may build/break on {@code island}: they own it, or
+     * (with coop enabled) they share an xTeams team with the owner.
+     */
+    public boolean canUse(Player player, OGIsland island) {
+        if (island == null) return false;
+        UUID owner = island.data().owner();
+        if (owner.equals(player.getUniqueId())) return true;
+        return coopEnabled() && OGTeamBridge.areTeammates(player.getUniqueId(), owner);
+    }
+
+    private boolean coopEnabled() {
+        return plugin.getConfig().getBoolean("coop.enabled", true);
     }
 
     public OGIsland at(Location location) {

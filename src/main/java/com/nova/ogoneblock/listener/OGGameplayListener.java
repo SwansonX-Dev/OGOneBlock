@@ -160,7 +160,10 @@ public final class OGGameplayListener implements Listener {
         if (event.getCause() != EntityDamageEvent.DamageCause.VOID) return;
         if (!(event.getEntity() instanceof Player player)) return;
         if (!inOgWorld(player)) return;
-        OGIsland island = plugin.islands().of(player);
+        // Send the faller back to whatever island they're over (their own or a
+        // teammate's shared one), falling back to their home island.
+        OGIsland island = plugin.islands().at(player.getLocation());
+        if (island == null || !canUseIsland(player, island)) island = plugin.islands().homeIsland(player);
         if (island == null) return;
         Location spawn = island.data().spawnLocation(plugin.worlds().slotSize(), plugin.worlds().centerY());
         if (spawn.getWorld() == null) return;
@@ -183,7 +186,7 @@ public final class OGGameplayListener implements Listener {
     public void onRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
         if (!player.getWorld().getName().equals(plugin.worlds().worldName())) return;
-        OGIsland island = plugin.islands().of(player);
+        OGIsland island = plugin.islands().homeIsland(player);
         if (island == null) return;
         Location spawn = island.data().spawnLocation(plugin.worlds().slotSize(), plugin.worlds().centerY());
         if (spawn.getWorld() == null) return;
@@ -240,7 +243,7 @@ public final class OGGameplayListener implements Listener {
     }
 
     private boolean canUseIsland(Player player, OGIsland island) {
-        return island != null && island.data().owner().equals(player.getUniqueId());
+        return plugin.islands().canUse(player, island);
     }
 
     private List<ItemStack> oneBlockDrops(Block block, Player player) {

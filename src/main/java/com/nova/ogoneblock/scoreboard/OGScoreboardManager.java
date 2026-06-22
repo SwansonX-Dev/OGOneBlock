@@ -87,7 +87,7 @@ public final class OGScoreboardManager {
 
     private List<String> buildLines(Player player) {
         List<String> lines = new ArrayList<>();
-        OGIsland island = plugin.islands().of(player);
+        OGIsland island = plugin.islands().homeIsland(player);
         if (island == null) {
             lines.add("<gray>No OG island yet.");
             lines.add("<gray>Talk to the spawn NPC.");

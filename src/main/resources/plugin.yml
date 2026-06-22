@@ -5,7 +5,7 @@ api-version: '1.21'
 authors: [Nova]
 description: Vanilla-style hard OneBlock mode with isolated islands and xTags milestones.
 load: POSTWORLD
-softdepend: [xTags]
+softdepend: [xTags, xTeams, NovaBlock]
 
 commands:
   ogoneblock:
