@@ -60,7 +60,11 @@ public final class OGGameplayListener implements Listener {
         plugin.getServer().getScheduler().runTaskLater(plugin, () -> allowedEntries.remove(playerId), 100L);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    // Not ignoreCancelled: OG islands live outside the claim system, so a
+    // protection plugin (xGuard / NovaBlock) may have cancelled a teammate's
+    // break before us. We re-allow it below once the player is authorised, so
+    // coop members can break the OneBlock even where there's no claim.
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
         if (!inOgWorld(player)) return;
@@ -70,6 +74,8 @@ public final class OGGameplayListener implements Listener {
             Text.send(player, "<red>This is not your OG island.");
             return;
         }
+        // Authorised on this island — override any protection that cancelled us.
+        event.setCancelled(false);
         Location center = island.centerBlock();
         Location block = event.getBlock().getLocation();
         if (block.getBlockX() == center.getBlockX()
@@ -113,14 +119,18 @@ public final class OGGameplayListener implements Listener {
         });
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlace(BlockPlaceEvent event) {
         if (!inOgWorld(event.getPlayer())) return;
         OGIsland island = plugin.islands().at(event.getBlockPlaced().getLocation());
         if (!canUseIsland(event.getPlayer(), island)) {
             event.setCancelled(true);
             Text.send(event.getPlayer(), "<red>This is not your OG island.");
+            return;
         }
+        // Authorised on this island — override any protection that cancelled us
+        // (OG islands aren't claims, so coop members must still be able to build).
+        event.setCancelled(false);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
